@@ -9,6 +9,8 @@ Modified from starter code provided for COMP 599 course
 
 import os
 import codecs
+import time
+import sys
 import numpy as np
 from nltk.tokenize import sent_tokenize, word_tokenize
 from nltk.stem import WordNetLemmatizer
@@ -19,7 +21,7 @@ from sklearn.feature_extraction.text import CountVectorizer
 
 stoplist = set(stopwords.words('english'))
 
-def read_tac(year, n_range = (1,1), remove_stopwords = False, min_df=0., lemmatize = False, lowercase = True, nfeats=100):
+def read_tac(year, test_data=False, n_range = (1,1), remove_stopwords = False, min_df=0., lemmatize = False, lowercase = True, nfeats=1000, count_vect=None):
     """Read data set and return feature matrix X and labels y.
 
     Args:
@@ -59,37 +61,41 @@ def read_tac(year, n_range = (1,1), remove_stopwords = False, min_df=0., lemmati
         s, e = 921, 1801
 
     if remove_stopwords:
-        stop_words = stopwords
+        stop_words = stoplist
     else:
         stop_words = None
 
-    count_vect = CountVectorizer(tokenizer=CustomTokenizer(lemmatize=lemmatize),
-                                 stop_words=stop_words,
-                                 lowercase=lowercase,
-                                 ngram_range=n_range,
-                                 max_features=100,
-                                 min_df=min_df)
-
-
-    # TODO: This is a little funky since I'm loading everything into memory
-    #       do it better?
+    if not count_vect:
+        count_vect = CountVectorizer(tokenizer=CustomTokenizer(lemmatize=lemmatize),
+                                     stop_words=stop_words,
+                                     lowercase=lowercase,
+                                     ngram_range=n_range,
+                                     max_features=nfeats,
+                                     min_df=min_df)
 
     documents = []
+
     # one pass to generate a vocabulary
+
     for i in xrange(s, e):
         fname = os.path.join(sub_folder, template % i)
         s = codecs.open(fname, 'r', encoding = 'utf-8').read()
         s = codecs.encode(s, 'ascii', 'ignore')
-        documents.extend(s)
+        documents.append(s)
 
-    count_vect.fit(documents)
+    # count_vect.fit(documents)
 
-    for doc in documents:
-        X.append(extract_features(doc, count_vect))
+    print("Extracting features...")
 
+    if not test_data:
+        X = count_vect.fit_transform(documents).toarray()
+    else:
+        X = count_vect.transform(documents).toarray()
+
+    # import pdb; pdb.set_trace()
     Y = np.array(Y)
-    X = np.vstack(tuple(X))
-    return X, Y
+
+    return X, Y, count_vect
 
 def ispunct(some_string):
     """ Function for checking if a string has punctuation
@@ -134,18 +140,6 @@ def get_tokens(s):
         retval.extend(tokens)
     return retval
 
-def extract_features(doc, count_vect):
-    """Extract features from text file f into a feature vector.
-
-    Args:
-        f: file containing strings
-        count_vect: (CountVectorizer) the count vectorizer to track the dictionary
-
-    Returns:
-        a list of indices?
-    """
-    return count_vect.transform(doc).toarray()
-
 # evaluation code
 def accuracy(gold, predict):
     """Calculates the accuracy of predicted values
@@ -164,3 +158,4 @@ def accuracy(gold, predict):
             corr += 1
     acc = float(corr) / len(gold)
     print 'Accuracy %d / %d = %.4f' % (corr, len(gold), acc)
+    return acc

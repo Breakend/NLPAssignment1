@@ -9,15 +9,11 @@ Modified from starter code provided for COMP 599 course
 
 import os
 import codecs
-import time
-import sys
 import numpy as np
 from nltk.tokenize import sent_tokenize, word_tokenize
 from nltk.stem import WordNetLemmatizer
 from nltk.corpus import stopwords
 from sklearn.feature_extraction.text import CountVectorizer
-
-# TODO: add tests
 
 stoplist = set(stopwords.words('english'))
 
@@ -42,7 +38,7 @@ def read_tac(year, test_data=False, n_range = (1,1), remove_stopwords = False, m
     """
     # modify this according to your directory structure
     sub_folder = '../data/tac%s' % year
-    X, Y = [], []
+    Y = []
 
     # labels
     labels_f = 'tac%s.labels' % year

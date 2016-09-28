@@ -4,14 +4,11 @@ on a document classification problem with the TAC 2010-2011 datasets
 
 @author: peter.henderson
 '''
-
-import numpy as np
-
 from utils import read_tac, accuracy
 from sklearn import svm, linear_model, naive_bayes
 
 from sklearn.cross_validation import KFold
-from sklearn.metrics import confusion_matrix, f1_score
+from sklearn.metrics import confusion_matrix
 from itertools import product, izip_longest
 import csv
 

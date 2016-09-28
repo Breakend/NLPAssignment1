@@ -9,3 +9,6 @@ TAC-2011 (http://tac.nist.gov/2011/Summarization/) is used as a test dataset.
 
 Data is not provided due to copyright concerns.
 
+To run all experiments across all permutations of featureset values specified in run_experiments.py simply run:
+
+python run_experiments.py

@@ -97,17 +97,6 @@ def read_tac(year, test_data=False, n_range = (1,1), remove_stopwords = False, m
 
     return X, Y, count_vect
 
-def ispunct(some_string):
-    """ Function for checking if a string has punctuation
-
-    Args:
-       some_string: word to check
-
-    Returns:
-        boolean whether contains punctuation
-    """
-    return not any(char.isalnum() for char in some_string)
-
 class CustomTokenizer(object):
     def __init__(self, lemmatize=False):
         if lemmatize:
